@@ -134,7 +134,7 @@ STATICFILES_DIRS = (
     ('js', os.path.join(STATIC_ROOT , 'js')),
     ('img', os.path.join(STATIC_ROOT , 'img')),
 )
-
-MEDIA_ROOT='/home/gsc/git/corporate-travel-portal/webapp/media/uploads/'
+MEDIA_ROOT_DIR = os.path.join(BASE_DIR, 'media', 'uploads/')
+MEDIA_ROOT=MEDIA_ROOT_DIR #Change me
 MEDIA_URL = '/media/'
 
