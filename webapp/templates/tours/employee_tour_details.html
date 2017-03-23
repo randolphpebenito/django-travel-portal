@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Employee Tour Detail{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li class='active'>
+		{% if finance_manager_user %}
+            <a href="{% url "tour:fin-man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+		{% elif manager_user %}
+            <a href="{% url "tour:man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+		{% else %}
+            <a href="{% url "tour:emp-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+        {% endif %}
+    </li>
+{% endblock %}
+{% block content %}
+<div id="page-wrapper">
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Tour Details</h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i> <a href="{% url "tour:route" %}">Dashboard</a>
+                </li>
+                <li class="">
+                        {% if finance_manager_user %}
+                            <a href="{% url "tour:fin-man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+                        {% elif manager_user %}
+                            <a href="{% url "tour:man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+                        {% else %}
+                            <a href="{% url "tour:emp-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+                        {% endif %}
+                </li>
+                <li class="active">
+                        <i class="fa fa-file-text"></i> Details
+                </li>
+
+        </ol>
+    </div>
+    </div>
+	<!-- Result -->
+	{% if messages %}
+		<div class='messages'>
+			<ul class="messages alert alert-success">
+				{% for message in messages %}
+					<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+						{% if "html_safe" in message.tags %}
+								{{ message|safe }}
+						{% else %}
+							{{ message }}
+						{% endif %}
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	{% endif %}
+	<div class="row">
+	
+	{% if status_id == 1 %}
+		{% if finance_manager_user %}
+			<div class='col-md-6'>
+				<table class="table table-bordered">
+					<thead>
+					<tr>
+						<th colspan="2" class="text-center">Manager</th>
+						<th>Finance Manager</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>Approved and Submitted By:</td>
+						<td>{{ tour_details.approving_manager }}</td>
+						<td>
+							<form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id tour_details.pk 'approved' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-success confirm">
+									<i class="fa fa-check-square-o"></i>
+								</button>
+							</form>
+							<form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id tour_details.pk 'rejected' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-danger confirm">
+									<i class="fa fa-close"></i>
+								</button>
+							</form>
+							<form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id tour_details.pk 'request-for-info' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-info confirm">
+									<i class="fa fa-info-circle"></i>
+								</button>
+							</form>
+						</td>
+					</tr>
+					</tbody>
+					{% elif manager_user %}
+					<div class='col-md-3'>
+					<table class="table table-bordered">
+					<thead>
+					<tr>
+						<th>Approving Manager</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<td>
+							<form id='update_status' action="{% url 'tour:man-tour-details-edit' tour_details.approving_manager.pk tour_details.pk 'approved' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-success confirm">
+									<i class="fa fa-check-square-o"></i>
+								</button>
+							</form>
+							<form action="{% url 'tour:man-tour-details-edit' tour_details.approving_manager.pk tour_details.pk 'rejected' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-danger confirm">
+									<i class="fa fa-close"></i>
+								</button>
+							</form>
+							<form action="{% url 'tour:man-tour-details-edit' tour_details.approving_manager.pk tour_details.pk 'request-for-info' %}" method="post" style="display: inline;">
+								{% csrf_token %}
+								<input type="hidden" name="status_id" value="" />
+								<button type="submit" class="btn btn-info confirm">
+									<i class="fa fa-info-circle"></i>
+								</button>
+							</form>
+						</td>
+					</tr>
+					</tbody>
+
+					{% endif %}
+				</table>
+
+			</div>
+			</div>
+	{% endif %}
+
+    <div class="panel panel-default">
+        <div class="panel-heading" style="background-color: #0393a6; padding-bottom: 30px">
+            <div class="row">
+                <h1>
+                    <div class="col-md-11" style="color: #FFF; ">
+                   Moving Walls Employee Tour Request
+                    {% if tour_details.draft %}
+                        (Draft)
+                    </div>
+                        <div class="col-md-1">
+                            <a href="{% url 'tour:emp-detail-edit' tour_details.employee.id tour_details.id %}">
+                            <i class="fa fa-edit" style="color: #FFF"></i>
+                        </a>
+                        </div>
+                    {% endif%}
+                </h1>
+            </div>
+        </div>
+        <div class="panel-body">
+            <p>{{ tour_details.purpose }}</p>
+        </div>
+		<ul class="list-group">
+            <li class="list-group-item">
+                <h2>Details</h2>
+                <p><strong>Tour Reference ID:</strong> {{ tour_details }}<p>
+                <p><strong>Tour Name:</strong> {{ tour_details.tour_name }}<p>
+                <p><strong>Full Name:</strong> {{ tour_details.employee.firstname }} {{ tour_details.employee.lastname }}<p>
+                <p><strong>Start Date:</strong> {{ tour_details.start_date }}<p>
+                <p><strong>End Date:</strong> {{ tour_details.start_date }}</p>
+                <p><strong>Mode Of Travel:</strong> {{ tour_details.mode_of_travel }}</p></br>
+
+                <h4><strong>Cost </strong></h4><hr>
+                <p><strong>Ticket:</strong> RM{{ tour_details.ticket_cost }}<p>
+                <p><strong>Hotel:</strong>RM{{ tour_details.hotel_cost }} <p>
+                <p><strong>Airport Cab Return Home:</strong> RM{{ tour_details.airport_cab_cost_home }}</p>
+                <p><strong>Airport Cab Destination:</strong> RM{{ tour_details.airport_cab_cost_dest }}</p>
+                <p><strong>Local Conveyance at the tour:</strong> {{ tour_details.local_conveyance }}</p>
+                <p><strong>Bills Image:</strong></p>
+                {% if tour_details.bills_image %}
+                    <img id="myImg" src="{{ tour_details.bills_image.url }}" class="img-responsive" width="300" height="200">
+                    <p>{{ tour_details.bills_image_caption }}</p>
+					<!-- The Modal -->
+					<div id="myModal" class="modal">
+					
+					  <!-- The Close Button -->
+					  <span class="close" onclick="document.getElementById('myModal').style.display='none'" style='color: #FFF'>&times;</span>
+					
+					  <!-- Modal Content (The Image) -->
+					  <img class="modal-content" id="img01">
+					
+					  <!-- Modal Caption (Image Text) -->
+					  <div id="caption"></div>
+					</div>
+                {% else %}
+                    <p>N/A</p>
+                {% endif %}
+                </br>
+
+                <h4><strong>Tour Status</strong></h4><hr>
+                <p><strong>Approving Manager:</strong> {{ tour_details.approving_manager }}</p></br>
+                {% if tour_details.draft is False %}
+                <p><strong>Status:</strong> {{ tour_details.request_status }}</p></br>
+                {% endif %}
+
+            </li>
+        </ul>
+    </div>
+    {% if manager_user %}
+        {% if status_id == 2 %}
+            {% if not etr_stat.submitted_to_finance_manager %}
+                <form id='submit' action="{% url 'tour:man-tour-details-submit' tour_details.approving_manager.pk tour_details.pk %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="status_id" value="" />
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa fa-check-square-o"> Submit to Finance Manager</i>
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+
+</div>
+</div>
+{% endblock %}

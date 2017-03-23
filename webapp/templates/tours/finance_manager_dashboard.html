@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Manager{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li class='active'>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li>
+        <a href="{% url "tour:fin-man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+<div class='container-fluid'>
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Dashboard <small>Finance Manager</small></h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li class="active">
+					<i class="fa fa-dashboard"></i> Dashboard
+                </li>
+        </ol>
+    </div>
+    </div>
+	<div class='row'>
+		<div class=" col-md-3 col-sm-3">
+			<div class="style-box-one Style-one-clr-approve">
+                <a href="{% url 'tour:fin-man-list-status' tour_id 'approved' %}">
+					<span class="fa fa-check fa-5x"></span>
+					 <h5>Approved</h5>
+					<i class="fa fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+		<div class=" col-md-3 col-sm-3">
+			<div class="style-box-one Style-one-clr-reject">
+                <a href="{% url 'tour:fin-man-list-status' tour_id 'rejected' %}">
+					<span class="fa fa-thumbs-down fa-5x"></span>
+					 <h5>Rejected</h5>
+					<i class="fa fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+		<div class=" col-md-3 col-sm-3">
+			<div class="style-box-one Style-one-clr-pending">
+                <a href="{% url 'tour:fin-man-list-status' tour_id 'pending' %}">
+					<span class="fa fa-spinner fa-5x"></span>
+					 <h5>Pending</h5>
+					<i class="fa fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+		<div class=" col-md-3 col-sm-3">
+			<div class="style-box-one Style-one-clr-rfi">
+                <a href="{% url 'tour:fin-man-list-status' tour_id 'request-for-info' %}">
+					<span class="fa fa-tasks fa-4x"></span>
+					 <h5>Request For Information</h5>
+					<i class="fa fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class='row'>
+		<div class="col-md-3 col-sm-3 col-md-offset-11">
+			<a href="{% url 'tour:fin-man-list' employee_account.id %}">View All</a>
+	</div>
+
+
+</div>
+</div>
+{% endblock %}

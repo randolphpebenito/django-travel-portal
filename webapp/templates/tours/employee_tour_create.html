@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% load staticfiles %}
+
+
+{% block title %}Travel Portal | Employee Create{% endblock %}
+{% block sidebar %}
+    <li>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li class='active'>
+        <a href="{% url "tour:emp-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Create Tour</h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i> <a href="{% url "tour:route" %}">Dashboard</a>
+                </li>
+                <li class="">
+                    <a href="{% url "tour:emp-list" tour_id %}"><i class="fa fa-plane"></i> Tours </a>
+                </li>
+                <li class="active">
+                        <i class="fa fa-plus-square-o"></i> Create
+                </li>
+
+        </ol>
+    </div>
+    </div>
+    <div class='col-sm-6 col-sm-offset-3'>
+        <form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
+            {{ form | crispy }}
+            <input type='submit' class='btn btn-primary' value='SUBMIT' />
+        </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

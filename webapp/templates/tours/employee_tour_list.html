@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Employee Tour List{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li class='active'>
+        <a href="{% url "tour:emp-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Tours</h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i> <a href="{% url "tour:route" %}">Dashboard</a>
+                </li>
+                <li class="active">
+                        <i class="fa fa-plane"></i> Tours
+                </li>
+
+        </ol>
+    </div>
+    </div>
+    <div class="row" style='margin-bottom: 20px'>
+        <div class="col-lg-3 col-md-6 col-lg-offset-9 col-md-offset-6" style='padding-left: 80px'>
+            <a href="{% url 'tour:emp-create' employee_account.id %}">
+                <button type="button" class="btn btn-lg btn-success"><i class="fa fa-plus-square fa-1x"></i> Add New Tour</button>
+            </a>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="active">
+          <a href="{% url "tour:emp-list" tour_id %} ">All <span class="badge">{{ tour_count }}</span></a>
+      </li>
+      <li role="presentation" class="">
+          <a href="{% url "tour:emp-list-status" tour_id 'approved' %}">Approved <span class="badge">{{ approved_count }}</a>
+      </li>
+      <li role="presentation" class="">
+          <a href="{% url "tour:emp-list-status" tour_id 'rejected' %}">Rejected <span class="badge">{{ rejected_count }}</a>
+      </li>
+      <li role="presentation" class="">
+          <a href="{% url "tour:emp-list-status" tour_id 'request-for-info' %}">Request For Information <span class="badge">{{ rfi_count }}</a>
+      </li>
+      <li role="presentation" class="">
+          <a href="{% url "tour:emp-list-status" tour_id 'pending' %}">Pending <span class="badge">{{ pending_count }}</a>
+      </li>
+      <li role="presentation" class="">
+          <a href="{% url "tour:emp-list-status" tour_id 'draft' %}">Draft <span class="badge">{{ draft_count }}</a>
+      </li>
+    </ul>
+    <div class="row">
+        <div class="panel">
+            <div class="panel-body">
+            <div class='row'>
+                <div class="col-lg-8 col-md-8">
+                    <h3>All Tours</h3>
+                </div>
+                <div id='tours_table' class="col-lg-4 col-md-4" style='padding-top: 20px; padding-left: 70px;'>
+					<form method='GET' action='' class='input-group'>
+						<input type='text' name='q' class="form-control" placeholder='Search tours' value='{{ request.GET.q }}'/>
+						  <span class="input-group-btn">
+							<button class="btn btn-default" type="submit">Go!</button>
+						  </span>
+					</form>
+                </div>
+            </div>
+            <hr>
+            {% if tours %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Tour ID</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Approving Manager</th>
+                    <th>Submitted</th>
+                    <th>Approved</th>
+                    <th>Last Modified</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for t in tours %}
+                    <tr>
+                        <td><a href='{% url 'tour:emp-detail' t.employee.id t.id %}'>{{ t }}</a></td> 
+                        <td>{{ t.start_date }}</td> 
+                        <td>{{ t.end_date }}</td> 
+                        <td>{{ t.approving_manager }}</td> 
+                        <td>
+                            {% if t.is_submitted %}
+                                <i class="fa fa-check icon-true"></i>
+                            {% else %}
+                                <i class="fa fa-close icon-false"></i>
+                            {% endif %}
+                        </td> 
+                        <td>
+                            {% if t.draft %}
+								-
+                            {% elif t.request_status.pk == 1 %}
+                                <span class="label label-default">{{t.request_status}}</span>
+                            {% elif t.request_status.pk == 2 %}
+                                <span class="label label-success">{{t.request_status}}</span>
+                            {% elif t.request_status.pk == 3 %}
+                                <span class="label label-danger">{{t.request_status}}</span>
+                            {% elif t.request_status.pk == 4 %}
+                                <span class="label label-primary">{{t.request_status}}</span>
+                            {% endif %}
+                        </td> 
+                        <td>{{ t.date_modified }}</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+			{% if tours.has_other_pages %}
+			  <ul class="pagination">
+				{% if tours.has_previous %}
+				  <li><a href="?page={{ tours.previous_page_number }}#tours_table">&laquo;</a></li>
+				{% else %}
+				  <li class="disabled"><span>&laquo;</span></li>
+				{% endif %}
+				{% for i in tours.paginator.page_range %}
+				  {% if tours.number == i %}
+					<li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+				  {% else %}
+					<li><a href="?page={{ i }}#tours_table">{{ i }}</a></li>
+				  {% endif %}
+				{% endfor %}
+				{% if tours.has_next %}
+				  <li><a href="?page={{ tours.next_page_number }}#tours_table">&raquo;</a></li>
+				{% else %}
+				  <li class="disabled"><span>&raquo;</span></li>
+				{% endif %}
+			  </ul>
+			{% endif %}
+            </div>
+        {% else %}
+            <small>There are no {{ status }} Tours yet.</small>
+        {% endif %}
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}

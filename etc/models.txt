@@ -1,0 +1,47 @@
+
+employee_accounts app
+
+    EmployeeAccount
+        - account = OneToOne(User)
+        - account_position = 
+        - date_modified = models.DateTimeField(auto_now=True)
+        - date_created = models.DateTimeField(auto_now_add=True)
+
+tour app
+    EmployeeTourRequest
+        - purpose = textfield (varchar brief description)
+        - employee = User 
+        - start_date = Date
+        - end_date = Date
+        - mode_of_travel = varchar
+        - ticket_cost = money field
+        - cost_of_airport_cab_at_home_city = money field
+        - cost_of_airport_cab_at_destination_city = money field
+        - hotel_cost = money field
+        - approving_manager = Employee
+        - draft = boolean
+        - is_submitted = boolean
+        - local_conveyance
+        - date_modified = models.DateTimeField(auto_now=True)
+        - date_created = models.DateTimeField(auto_now_add=True)
+
+    EmployeeTourRequestStatus
+        - emp_tour_req_id = FK
+        - approved_by_manager = boolean
+        - manager_req_for_info = boolean
+        - approved_by_finance_manager = boolean
+        - fin_manager_req_for_info = boolean
+        - date_modified = models.DateTimeField(auto_now=True)
+        - date_created = models.DateTimeField(auto_now_add=True)
+         
+
+    EmployeeTourRequestStatusManagerList
+        - emp_tour_req_id(FK)
+        - is_
+        
+    
+
+    
+
+
+

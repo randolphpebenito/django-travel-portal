@@ -1,0 +1,21 @@
+<!-- login.html -->
+{% extends "base_visitor.html" %}
+{% load staticfiles %}
+{% block title %}Moving Walls | Travel Portal{% endblock %}
+{% block style %} 
+    <link rel="stylesheet" type="text/css" href=" {% static 'css/base.css'%}">
+{% endblock %}
+{% block head %}<h1>Travel Portal</h1>{% endblock %}
+{% block content %}
+    {% if form.errors %}
+        <p style="color: #FF0000">Your username and password didn't match. Please try again.</p>
+    {% endif %}
+
+    <form class="form" method="post" action="." >{% csrf_token %}
+        <input type="text" placeholder="Username" name="username">
+        <input type="password" placeholder="Password" name="password">
+        <button type="submit"  value="Login" id="login-button">Login</button>
+        <input type="hidden" name="next" value='/tour/' />
+    </form>
+
+{% endblock %}

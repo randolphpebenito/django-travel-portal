@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Manager{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li class='active'>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li>
+        <a href="{% url "tour:man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+<div class='container-fluid'>
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Dashboard <small>Manager</small></h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li class="active">
+					<i class="fa fa-dashboard"></i> Dashboard
+                </li>
+        </ol>
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <div class="list-group">          
+                <a href="{% url 'tour:man-list-status' account_id 'approved' %}" class="list-group-item manager-approve">
+                    <h3 class="pull-right">
+                        <i class="fa fa-arrow-circle-right fa-2x fa-pos-icon"></i>
+                    </h3>
+                    <h4 class="list-group-item-heading count">
+                        {{ for_submission_count }}</h4>
+                    <p class="list-group-item-text">
+                    Approved Tours <small>(For submission)</small></p>
+                </a>
+                <a href="{% url 'tour:man-list-status' account_id 'pending' %}" class="list-group-item manager-pending-approve">
+                    <h3 class="pull-right">
+                        <i class="fa fa-clock-o fa-2x fa-pos-icon"></i>
+                    </h3>
+                    <h4 class="list-group-item-heading count">
+                        {{ pending_count }}</h4>
+                    <p class="list-group-item-text">
+                    Pending Tours <small>(For approval)</small></p>
+                </a>
+                <a href="{% url 'tour:man-list' employee_account.id %}" class="list-group-item manager-list">
+                    <h3 class="pull-right">
+                        <i class="fa fa-address-book fa-2x fa-pos-icon"></i>
+                    </h3>
+                    <h4 class="list-group-item-heading count">
+                        {{ tours.count }}</h4>
+                    <p class="list-group-item-text">
+                    View All <small>(Employee Tour Status)</small></p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}

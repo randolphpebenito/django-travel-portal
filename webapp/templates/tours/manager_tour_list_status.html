@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Manager For Approval Tour List {{ status }}{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li class='active'>
+        <a href="{% url "tour:man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+{% block content %}
+<div id="page-wrapper">
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Tours</h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i> <a href="{% url "tour:route" %}">Dashboard</a>
+                </li>
+                <li>
+                    <i class="fa fa-plane"></i> <a href="{% url "tour:man-list" tour_id %}">Tours</a>
+                </li>
+                <li class="active">
+                    {{ status_link }}
+                </li>
+
+        </ol>
+    </div>
+    </div>
+    <div class="row" style='margin-bottom: 20px'>
+    <div class="col-lg-12">
+        <ul class="nav nav-tabs">
+            <li role="presentation">
+                <a href="{% url 'tour:man-list' account_id %}">All</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 2 %}active{% endif %}'>
+                <a href="{% url 'tour:man-list-status' account_id 'approved' %}">Approved</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 3 %}active{% endif %}'>
+                <a href="{% url 'tour:man-list-status' account_id 'rejected' %}">Rejected</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 1 %}active{% endif %}'>
+                <a href="{% url 'tour:man-list-status' account_id 'pending' %}">Pending</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 4 %}active{% endif %}'>
+                <a href="{% url 'tour:man-list-status' account_id 'request-for-info' %}">Request For Information</a>
+            </li>
+        </ul>
+    </div>
+    <div class="panel" style='margin-top: 40px'>
+        <div class="panel-body">
+
+            <h3>{{ status }} Tours</h3>
+            <hr>
+
+            {% if error_message %}
+                <p><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            {% if tours %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Tour ID</th>
+                    <th>Employee Requestor</th>
+                    <th>My Approval</th>
+                    {% if status_id == 2 %}
+                        <th>Submit To Finance Manager</th>
+                        <th>Approving Finance Manager</th>
+                        <th>Approved By Finance Manager</th>
+                    {% endif %}
+                    <th>Last Modified</th>
+                    {% if status_id == 1 %}
+                        <th>Action</th>
+                    {% endif %}
+                </tr>
+                </thead>
+                <tbody>
+                        {% for t in tours %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'tour:man-tour-details' account_id t.emp_tour_req.pk status_link %}">
+                                    {{ t.emp_tour_req }}
+                                </a>
+                            </td> 
+                            <td>{{ t.emp_tour_req.employee }}</td> 
+                            <td>
+                                {% if t.approved_by_manager.pk == 1 %}
+                                    <span class="label label-default">{{t.approved_by_manager}}</span>
+                                {% elif t.approved_by_manager.pk == 2 %}
+                                    <span class="label label-success">{{t.approved_by_manager}}</span>
+                                {% elif t.approved_by_manager.pk == 3 %}
+                                    <span class="label label-danger">{{t.approved_by_manager}}</span>
+                                {% elif t.approved_by_manager.pk == 4 %}
+                                    <span class="label label-primary">{{t.approved_by_manager}}</span>
+                                {% endif %}
+                             </td>
+                                {% if status_id == 2 %}
+                                <td>
+                                    {% if t.submitted_to_finance_manager %}
+                                        <span class="label label-success">Submitted</span>
+                                    {% else %}
+                                        <form id='submit' action="{% url 'tour:man-tour-details-submit' t.emp_tour_req.approving_manager.pk t.emp_tour_req.pk %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status_id" value="" />
+                                            <button type="submit" class="btn btn-xs btn-primary">
+                                                <i class="fa fa-check-circle-o"></i> Submit
+                                            </button>
+                                        </form>
+                                        
+                                    
+                                    {% endif %}
+
+                                </td>
+                            <td>
+                                {% if t.approving_finance_manager %}
+                                    {{t.approving_finance_manager.firstname}} {{t.approving_finance_manager.lastname}}
+                                {% else %}
+                                    -
+                                {% endif%}
+                            </td>
+                            <td>
+                                {% if t.approving_finance_manager %}
+                                    {% if t.approved_by_finance_manager.pk == 1 %}
+                                        <span class="label label-default">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 2 %}
+                                        <span class="label label-success">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 3 %}
+                                        <span class="label label-danger">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 4 %}
+                                        <span class="label label-primary">{{t.approved_by_finance_manager}}</span>
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif%}
+                            
+                            </td>
+                            {% endif%}
+                            <td>{{ t.date_modified }}</td>
+                            {% if status_id == 1 %}
+                            <td>
+                                <form id='update_status' action="{% url 'tour:man-tour-details-edit' t.emp_tour_req.approving_manager.pk t.emp_tour_req.pk 'approved' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status_id" value="" />
+                                    <button type="submit" class="btn btn-success confirm">
+                                        <i class="fa fa-check-square-o"></i>
+                                    </button>
+                                </form>
+                                <form action="{% url 'tour:man-tour-details-edit' t.emp_tour_req.approving_manager.pk t.emp_tour_req.pk 'rejected' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status_id" value="" />
+                                    <button type="submit" class="btn btn-danger confirm">
+                                        <i class="fa fa-close"></i>
+                                    </button>
+                                </form>
+                                <form action="{% url 'tour:man-tour-details-edit' t.emp_tour_req.approving_manager.pk t.emp_tour_req.pk 'request-for-info' %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status_id" value="" />
+                                    <button type="submit" class="btn btn-info confirm">
+                                        <i class="fa fa-info-circle"></i>
+                                    </button>
+                                </form>
+                            <td>
+                            {% endif%}
+                        </tr>
+                        {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <small>There are no {{ status }} Tours yet.</small>
+        {% endif %}
+        </div>
+    </div>
+
+
+</div>
+
+</div>
+</div>
+{% endblock %}

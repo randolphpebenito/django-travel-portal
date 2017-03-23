@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Travel Portal | Finance Manager For Approval Tour List {{ status }}{% endblock %}
+{% block user %}{{ user }}{% endblock %}
+{% block sidebar %}
+    <li>
+        <a href="{% url "tour:route" %}"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+    </li>
+    <li class='active'>
+        <a href="{% url "tour:man-list" tour_id %}"><i class="fa fa-fw fa-plane"></i> Tours</a>
+    </li>
+{% endblock %}
+{% block content %}
+<div id="page-wrapper">
+<div class="container-fluid">
+    <div class="row">
+    <div class="col-lg-12">
+        <h1>Tours</h1>
+        <hr>
+        <ol class="breadcrumb">
+                <li>
+                    <i class="fa fa-dashboard"></i> <a href="{% url "tour:route" %}">Dashboard</a>
+                </li>
+                <li>
+                    <i class="fa fa-plane"></i> <a href="{% url "tour:fin-man-list" tour_id %}">Tours</a>
+                </li>
+                <li class="active">
+                    {{ status_link }}
+                </li>
+
+        </ol>
+    </div>
+    </div>
+    <div class="row" style='margin-bottom: 20px'>
+    <div class="col-lg-12">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class=''>
+                <a href="{% url 'tour:fin-man-list' tour_id %}">All</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 2 %}active{% endif %}'>
+                <a href="{% url 'tour:fin-man-list-status' account_id 'approved' %}">Approved</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 3 %}active{% endif %}'>
+                <a href="{% url 'tour:fin-man-list-status' account_id 'rejected' %}">Rejected</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 1 %}active{% endif %}'>
+                <a href="{% url 'tour:fin-man-list-status' account_id 'pending' %}">Pending</a>
+            </li>
+            <li role="presentation" class='{% if status_id == 4 %}active{% endif %}'>
+                <a href="{% url 'tour:fin-man-list-status' account_id 'request-for-info' %}">Request For Information</a>
+            </li>
+        </ul>
+        {% if messages %}
+        {% endif %}
+
+        <div class="panel">
+            <div class="panel-body">
+
+                <h3>{{ status }} Tours</h3>
+
+                {% if error_message %}
+                    <p><strong>{{ error_message }}</strong></p>
+                {% endif %}
+
+                {% if tours %}
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Tour ID</th>
+                        <th>Employee Requestor</th>
+                        <th>Approved and Submitted by</th>
+                        <th>Status</th>
+                        <th>Last Modified</th>
+
+                        {% if status == 'Pending' %} <th>Action</th> {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                            {% for t in tours %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'tour:fin-man-tour-details' account_id t.emp_tour_req.pk status_link %}">
+                                        {{ t.emp_tour_req }}
+                                    </a>
+                                </td> 
+                                <td>{{ t.emp_tour_req.employee }}</td> 
+                                <td>{{ t.emp_tour_req.approving_manager }}</td>
+                                <td>
+                                    {% if t.approved_by_finance_manager.pk == 1 %}
+                                        <span class="label label-default">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 2 %}
+                                        <span class="label label-success">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 3 %}
+                                        <span class="label label-danger">{{t.approved_by_finance_manager}}</span>
+                                    {% elif t.approved_by_finance_manager.pk == 4 %}
+                                        <span class="label label-primary">{{t.approved_by_finance_manager}}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ t.date_modified }}</td>
+                                {% if status == 'Pending' %} 
+                                    <td> 
+                                        <form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id t.emp_tour_req.pk 'approved' %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status_id" value="" />
+                                            <button type="submit" class="btn btn-success confirm">
+                                                <i class="fa fa-check-square-o"></i>
+                                            </button>
+                                        </form>
+                                        <form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id t.emp_tour_req.pk 'rejected' %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status_id" value="" />
+                                            <button type="submit" class="btn btn-danger confirm">
+                                                <i class="fa fa-close"></i>
+                                            </button>
+                                        </form>
+                                        <form action="{% url 'tour:fin-man-tour-details-edit' finance_manager_id t.emp_tour_req.pk 'request-for-info' %}" method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status_id" value="" />
+                                            <button type="submit" class="btn btn-info confirm">
+                                                <i class="fa fa-info-circle"></i>
+                                            </button>
+                                        </form>
+                                    
+                                    
+                                    </td>
+                                    
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <small>There are no {{ status }} Tours yet.</small>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+{% endblock %}
